@@ -88,7 +88,7 @@ class Todo extends Component {
         </button>
         <div>current maxId: {todoId}</div>
         <ul>
-          {store.getState().todos.map(todo => {
+          {this.props.todos.map(todo => {
             return <li key={todo.id}>{todo.text}</li>;
           })}
         </ul>
@@ -99,7 +99,7 @@ class Todo extends Component {
 
 const rootElement = document.getElementById("todo");
 const render = () => {
-  ReactDOM.render(<Todo />, rootElement);
+  ReactDOM.render(<Todo todos={store.getState().todos} />, rootElement);
 };
 store.subscribe(render);
 render();

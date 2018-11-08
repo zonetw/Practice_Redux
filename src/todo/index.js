@@ -12,7 +12,7 @@ const todo = (state = {}, action) => {
       return {
         id: action.id,
         text: action.text,
-        completed: action.completed
+        completed: false
       };
     case "TOOGLE_TODO":
       if (state.id === action.id) {
@@ -33,7 +33,7 @@ const todos = (state = [], action) => {
     case "ADD_TODO":
       return [...state, todo(undefined, action)];
     case "TOOGLE_TODO":
-      state.map(el => {
+      return state.map(el => {
         return todo(el, action);
       });
       break;
@@ -89,7 +89,22 @@ class Todo extends Component {
         <div>current maxId: {todoId}</div>
         <ul>
           {this.props.todos.map(todo => {
-            return <li key={todo.id}>{todo.text}</li>;
+            return (
+              <li
+                key={todo.id}
+                onClick={() => {
+                  store.dispatch({
+                    type: "TOOGLE_TODO",
+                    id: todo.id
+                  });
+                }}
+                style={{
+                  textDecoration: todo.completed ? "line-through" : "none"
+                }}
+              >
+                {todo.text}
+              </li>
+            );
           })}
         </ul>
       </div>

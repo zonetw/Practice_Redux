@@ -53,7 +53,7 @@ const visibilityFilter = (state = "SHOW_ALL", action) => {
   }
 };
 
-const FilterLink = ({ filter, currentFilter, children }) => {
+const FilterLink = ({ filter, currentFilter, children, onClick }) => {
   if (filter === currentFilter) {
     return <span>{children}</span>;
   } else {
@@ -62,10 +62,7 @@ const FilterLink = ({ filter, currentFilter, children }) => {
         href="#"
         onClick={e => {
           e.preventDefault();
-          store.dispatch({
-            type: "SET_VISIBILITY_FILTER",
-            filter
-          });
+          onClick(filter);
         }}
       >
         {children}
@@ -148,17 +145,29 @@ const AddTodo = ({ onAddTodoClick }) => {
   );
 };
 
-const Footer = ({ visibilityFilter }) => {
+const Footer = ({ visibilityFilter, onFilterClick }) => {
   return (
     <p>
       Show:{" "}
-      <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter}>
+      <FilterLink
+        filter="SHOW_ALL"
+        currentFilter={visibilityFilter}
+        onClick={onFilterClick}
+      >
         ALL
       </FilterLink>{" "}
-      <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter}>
+      <FilterLink
+        filter="SHOW_ACTIVE"
+        currentFilter={visibilityFilter}
+        onClick={onFilterClick}
+      >
         Active
       </FilterLink>{" "}
-      <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter}>
+      <FilterLink
+        filter="SHOW_COMPLETED"
+        currentFilter={visibilityFilter}
+        onClick={onFilterClick}
+      >
         Completed
       </FilterLink>
     </p>
@@ -183,7 +192,15 @@ class TodoApp extends Component {
           }}
         />
         <div>current maxId: {todoId}</div>
-        <Footer visibilityFilter={visibilityFilter} />
+        <Footer
+          visibilityFilter={visibilityFilter}
+          onFilterClick={filter =>
+            store.dispatch({
+              type: "SET_VISIBILITY_FILTER",
+              filter
+            })
+          }
+        />
         <TodoList
           todos={visibleTodos}
           onTodoClick={id =>

@@ -174,46 +174,43 @@ const Footer = ({ visibilityFilter, onFilterClick }) => {
   );
 };
 
-class TodoApp extends Component {
-  render() {
-    const { todos, visibilityFilter } = this.props;
-    const visibleTodos = getFilterdTodos(todos, visibilityFilter);
+const TodoApp = ({ todos, visibilityFilter }) => {
+  const visibleTodos = getFilterdTodos(todos, visibilityFilter);
 
-    return (
-      <div>
-        <h1>Practice: reducer with compisition pattern</h1>
-        <AddTodo
-          onAddTodoClick={value => {
-            store.dispatch({
-              type: "ADD_TODO",
-              text: value,
-              id: todoId++
-            });
-          }}
-        />
-        <div>current maxId: {todoId}</div>
-        <Footer
-          visibilityFilter={visibilityFilter}
-          onFilterClick={filter =>
-            store.dispatch({
-              type: "SET_VISIBILITY_FILTER",
-              filter
-            })
-          }
-        />
-        <TodoList
-          todos={visibleTodos}
-          onTodoClick={id =>
-            store.dispatch({
-              type: "TOGGLE_TODO",
-              id
-            })
-          }
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h1>Practice: reducer with compisition pattern</h1>
+      <AddTodo
+        onAddTodoClick={value => {
+          store.dispatch({
+            type: "ADD_TODO",
+            text: value,
+            id: todoId++
+          });
+        }}
+      />
+      <div>current maxId: {todoId}</div>
+      <Footer
+        visibilityFilter={visibilityFilter}
+        onFilterClick={filter =>
+          store.dispatch({
+            type: "SET_VISIBILITY_FILTER",
+            filter
+          })
+        }
+      />
+      <TodoList
+        todos={visibleTodos}
+        onTodoClick={id =>
+          store.dispatch({
+            type: "TOGGLE_TODO",
+            id
+          })
+        }
+      />
+    </div>
+  );
+};
 
 const rootElement = document.getElementById("todo");
 const render = () => {

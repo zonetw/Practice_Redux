@@ -127,7 +127,7 @@ const TodoList = ({ todos, onTodoClick }) => (
   </ul>
 );
 
-const AddTodo = ({onAddTodoClick}) => {
+const AddTodo = ({ onAddTodoClick }) => {
   let input;
   return (
     <div>
@@ -148,6 +148,23 @@ const AddTodo = ({onAddTodoClick}) => {
   );
 };
 
+const Footer = ({ visibilityFilter }) => {
+  return (
+    <p>
+      Show:{" "}
+      <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter}>
+        ALL
+      </FilterLink>{" "}
+      <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter}>
+        Active
+      </FilterLink>{" "}
+      <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter}>
+        Completed
+      </FilterLink>
+    </p>
+  );
+};
+
 class TodoApp extends Component {
   render() {
     const { todos, visibilityFilter } = this.props;
@@ -156,39 +173,26 @@ class TodoApp extends Component {
     return (
       <div>
         <h1>Practice: reducer with compisition pattern</h1>
-        <AddTodo onAddTodoClick={
-          (value)=>{
+        <AddTodo
+          onAddTodoClick={value => {
             store.dispatch({
               type: "ADD_TODO",
               text: value,
               id: todoId++
             });
-          }
-        } />
+          }}
+        />
         <div>current maxId: {todoId}</div>
-        <p>
-          Show:{" "}
-          <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter}>
-            ALL
-          </FilterLink>{" "}
-          <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter}>
-            Active
-          </FilterLink>{" "}
-          <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter}>
-            Completed
-          </FilterLink>
-        </p>
-        <ul>
-          <TodoList
-            todos={visibleTodos}
-            onTodoClick={id =>
-              store.dispatch({
-                type: "TOGGLE_TODO",
-                id
-              })
-            }
-          />
-        </ul>
+        <Footer visibilityFilter={visibilityFilter} />
+        <TodoList
+          todos={visibleTodos}
+          onTodoClick={id =>
+            store.dispatch({
+              type: "TOGGLE_TODO",
+              id
+            })
+          }
+        />
       </div>
     );
   }

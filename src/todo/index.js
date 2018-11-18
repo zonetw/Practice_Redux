@@ -127,6 +127,27 @@ const TodoList = ({ todos, onTodoClick }) => (
   </ul>
 );
 
+const AddTodo = ({onAddTodoClick}) => {
+  let input;
+  return (
+    <div>
+      <input
+        ref={node => {
+          input = node;
+        }}
+      />
+      <button
+        onClick={() => {
+          onAddTodoClick(input.value);
+          input.value = "";
+        }}
+      >
+        Add Todo
+      </button>
+    </div>
+  );
+};
+
 class TodoApp extends Component {
   render() {
     const { todos, visibilityFilter } = this.props;
@@ -135,24 +156,15 @@ class TodoApp extends Component {
     return (
       <div>
         <h1>Practice: reducer with compisition pattern</h1>
-        <input
-          ref={node => {
-            this.input = node;
-          }}
-        />
-        <button
-          onClick={() => {
+        <AddTodo onAddTodoClick={
+          (value)=>{
             store.dispatch({
               type: "ADD_TODO",
-              text: this.input.value,
+              text: value,
               id: todoId++
             });
-
-            this.input.value = "";
-          }}
-        >
-          Add Todo
-        </button>
+          }
+        } />
         <div>current maxId: {todoId}</div>
         <p>
           Show:{" "}
@@ -169,7 +181,7 @@ class TodoApp extends Component {
         <ul>
           <TodoList
             todos={visibleTodos}
-            onTodoClick={id => 
+            onTodoClick={id =>
               store.dispatch({
                 type: "TOGGLE_TODO",
                 id

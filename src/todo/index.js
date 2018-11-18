@@ -14,7 +14,7 @@ const todo = (state = {}, action) => {
         text: action.text,
         completed: false
       };
-    case "TOOGLE_TODO":
+    case "TOGGLE_TODO":
       if (state.id === action.id) {
         return {
           ...state,
@@ -32,7 +32,7 @@ const todos = (state = [], action) => {
   switch (action.type) {
     case "ADD_TODO":
       return [...state, todo(undefined, action)];
-    case "TOOGLE_TODO":
+    case "TOGGLE_TODO":
       return state.map(el => {
         return todo(el, action);
       });
@@ -99,7 +99,35 @@ const store = createStore(todoApp);
 
 let todoId = 0;
 
-class Todo extends Component {
+const Todo = ({ onClick, text, completed }) => {
+  return (
+    <li
+      key={todo.id}
+      onClick={onClick}
+      style={{
+        textDecoration: completed ? "line-through" : "none"
+      }}
+    >
+      {text}
+    </li>
+  );
+};
+
+const TodoList = ({ todos, onTodoClick }) => (
+  <ul>
+    {todos.map(todo => (
+      <Todo
+        key={todo.id}
+        {...todo}
+        onClick={() => {
+          onTodoClick(todo.id);
+        }}
+      />
+    ))}
+  </ul>
+);
+
+class TodoApp extends Component {
   render() {
     const { todos, visibilityFilter } = this.props;
     const visibleTodos = getFilterdTodos(todos, visibilityFilter);
@@ -139,24 +167,15 @@ class Todo extends Component {
           </FilterLink>
         </p>
         <ul>
-          {visibleTodos.map(todo => {
-            return (
-              <li
-                key={todo.id}
-                onClick={() => {
-                  store.dispatch({
-                    type: "TOOGLE_TODO",
-                    id: todo.id
-                  });
-                }}
-                style={{
-                  textDecoration: todo.completed ? "line-through" : "none"
-                }}
-              >
-                {todo.text}
-              </li>
-            );
-          })}
+          <TodoList
+            todos={visibleTodos}
+            onTodoClick={id => 
+              store.dispatch({
+                type: "TOGGLE_TODO",
+                id
+              })
+            }
+          />
         </ul>
       </div>
     );
@@ -165,8 +184,8 @@ class Todo extends Component {
 
 const rootElement = document.getElementById("todo");
 const render = () => {
-  ReactDOM.render(<Todo {...store.getState()} />, rootElement);
+  ReactDOM.render(<TodoApp {...store.getState()} />, rootElement);
 };
 store.subscribe(render);
 render();
-export default Todo;
+export default TodoApp;

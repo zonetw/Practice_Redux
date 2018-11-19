@@ -53,8 +53,8 @@ const visibilityFilter = (state = "SHOW_ALL", action) => {
   }
 };
 
-const FilterLink = ({ filter, currentFilter, children, onClick }) => {
-  if (filter === currentFilter) {
+const Link = ({ active, children, onClick }) => {
+  if (active) {
     return <span>{children}</span>;
   } else {
     return (
@@ -62,7 +62,7 @@ const FilterLink = ({ filter, currentFilter, children, onClick }) => {
         href="#"
         onClick={e => {
           e.preventDefault();
-          onClick(filter);
+          onClick();
         }}
       >
         {children}
@@ -70,6 +70,37 @@ const FilterLink = ({ filter, currentFilter, children, onClick }) => {
     );
   }
 };
+
+class FilterLink extends Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() =>
+      this.forceUpdate()
+    );
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const state = store.getState();
+
+    return (
+      <Link
+        active={props.filter === state.visibilityFilter}
+        onClick={() => {
+          store.dispatch({
+            type: "SET_VISIBILITY_FILTER",
+            filter: props.filter
+          });
+        }}
+      >
+        {props.children}
+      </Link>
+    );
+  }
+}
 
 const getFilterdTodos = (todos, filter) => {
   switch (filter) {
@@ -148,35 +179,14 @@ const AddTodo = ({ onAddTodoClick }) => {
 const Footer = ({ visibilityFilter, onFilterClick }) => {
   return (
     <p>
-      Show:{" "}
-      <FilterLink
-        filter="SHOW_ALL"
-        currentFilter={visibilityFilter}
-        onClick={onFilterClick}
-      >
-        ALL
-      </FilterLink>{" "}
-      <FilterLink
-        filter="SHOW_ACTIVE"
-        currentFilter={visibilityFilter}
-        onClick={onFilterClick}
-      >
-        Active
-      </FilterLink>{" "}
-      <FilterLink
-        filter="SHOW_COMPLETED"
-        currentFilter={visibilityFilter}
-        onClick={onFilterClick}
-      >
-        Completed
-      </FilterLink>
+      Show: <FilterLink filter="SHOW_ALL">ALL</FilterLink>{" "}
+      <FilterLink filter="SHOW_ACTIVE">Active</FilterLink>{" "}
+      <FilterLink filter="SHOW_COMPLETED">Completed</FilterLink>
     </p>
   );
 };
 
 const TodoApp = ({ todos, visibilityFilter }) => {
-  const visibleTodos = getFilterdTodos(todos, visibilityFilter);
-
   return (
     <div>
       <h1>Practice: reducer with compisition pattern</h1>
@@ -200,7 +210,7 @@ const TodoApp = ({ todos, visibilityFilter }) => {
         }
       />
       <TodoList
-        todos={visibleTodos}
+        todos={getFilterdTodos(todos, visibilityFilter)}
         onTodoClick={id =>
           store.dispatch({
             type: "TOGGLE_TODO",

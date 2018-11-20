@@ -73,6 +73,7 @@ const Link = ({ active, children, onClick }) => {
 
 class FilterLink extends Component {
   componentDidMount() {
+    const { store } = this.props;
     this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
@@ -82,6 +83,7 @@ class FilterLink extends Component {
 
   render() {
     const props = this.props;
+    const { store } = this.props;
     const state = store.getState();
 
     return (
@@ -140,20 +142,23 @@ const Todo = ({ onClick, text, completed }) => {
 };
 
 const TodoList = ({ todos, onTodoClick }) => (
-  <ul>
-    {todos.map(todo => (
-      <Todo
-        key={todo.id}
-        {...todo}
-        onClick={() => {
-          onTodoClick(todo.id);
-        }}
-      />
-    ))}
-  </ul>
+  <div>
+    <div>current maxId: {todos.length}</div>
+    <ul>
+      {todos.map(todo => (
+        <Todo
+          key={todo.id}
+          {...todo}
+          onClick={() => {
+            onTodoClick(todo.id);
+          }}
+        />
+      ))}
+    </ul>
+  </div>
 );
 
-const AddTodo = () => {
+const AddTodo = ({ store }) => {
   let input;
   return (
     <div>
@@ -178,18 +183,26 @@ const AddTodo = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ store }) => {
   return (
     <p>
-      Show: <FilterLink filter="SHOW_ALL">ALL</FilterLink>{" "}
-      <FilterLink filter="SHOW_ACTIVE">Active</FilterLink>{" "}
-      <FilterLink filter="SHOW_COMPLETED">Completed</FilterLink>
+      Show:{" "}
+      <FilterLink filter="SHOW_ALL" store={store}>
+        ALL
+      </FilterLink>{" "}
+      <FilterLink filter="SHOW_ACTIVE" store={store}>
+        Active
+      </FilterLink>{" "}
+      <FilterLink filter="SHOW_COMPLETED" store={store}>
+        Completed
+      </FilterLink>
     </p>
   );
 };
 
 class VisibleTodoList extends Component {
   componentDidMount() {
+    const { store } = this.props;
     this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
@@ -198,7 +211,7 @@ class VisibleTodoList extends Component {
   }
 
   render() {
-    const props = this.props;
+    const { store } = this.props;
     const state = store.getState();
 
     return (
@@ -215,18 +228,17 @@ class VisibleTodoList extends Component {
   }
 }
 
-const TodoApp = () => {
+const TodoApp = ({ store }) => {
   return (
     <div>
       <h1>Practice: reducer with compisition pattern</h1>
-      <AddTodo />
-      <div>current maxId: {todoId}</div>
-      <Footer />
-      <VisibleTodoList />
+      <AddTodo store={store} />
+      <Footer store={store} />
+      <VisibleTodoList store={store} />
     </div>
   );
 };
 
 const rootElement = document.getElementById("todo");
-ReactDOM.render(<TodoApp />, rootElement);
+ReactDOM.render(<TodoApp store={createStore(todoApp)} />, rootElement);
 export default TodoApp;

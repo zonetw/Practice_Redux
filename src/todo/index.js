@@ -73,9 +73,7 @@ const Link = ({ active, children, onClick }) => {
 
 class FilterLink extends Component {
   componentDidMount() {
-    this.unsubscribe = store.subscribe(() =>
-      this.forceUpdate()
-    );
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
   componentWillUnmount() {
@@ -155,7 +153,7 @@ const TodoList = ({ todos, onTodoClick }) => (
   </ul>
 );
 
-const AddTodo = ({ onAddTodoClick }) => {
+const AddTodo = () => {
   let input;
   return (
     <div>
@@ -166,7 +164,11 @@ const AddTodo = ({ onAddTodoClick }) => {
       />
       <button
         onClick={() => {
-          onAddTodoClick(input.value);
+          store.dispatch({
+            type: "ADD_TODO",
+            text: input.value,
+            id: todoId++
+          });
           input.value = "";
         }}
       >
@@ -186,19 +188,38 @@ const Footer = ({ visibilityFilter, onFilterClick }) => {
   );
 };
 
+class VisibleTodoList extends Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const state = store.getState();
+
+    return (
+      <TodoList
+        todos={getFilterdTodos(state.todos, state.visibilityFilter)}
+        onTodoClick={id =>
+          store.dispatch({
+            type: "TOGGLE_TODO",
+            id
+          })
+        }
+      />
+    );
+  }
+}
+
 const TodoApp = ({ todos, visibilityFilter }) => {
   return (
     <div>
       <h1>Practice: reducer with compisition pattern</h1>
-      <AddTodo
-        onAddTodoClick={value => {
-          store.dispatch({
-            type: "ADD_TODO",
-            text: value,
-            id: todoId++
-          });
-        }}
-      />
+      <AddTodo />
       <div>current maxId: {todoId}</div>
       <Footer
         visibilityFilter={visibilityFilter}
@@ -209,15 +230,7 @@ const TodoApp = ({ todos, visibilityFilter }) => {
           })
         }
       />
-      <TodoList
-        todos={getFilterdTodos(todos, visibilityFilter)}
-        onTodoClick={id =>
-          store.dispatch({
-            type: "TOGGLE_TODO",
-            id
-          })
-        }
-      />
+      <VisibleTodoList />
     </div>
   );
 };

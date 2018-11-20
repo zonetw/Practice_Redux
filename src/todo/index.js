@@ -178,7 +178,7 @@ const AddTodo = () => {
   );
 };
 
-const Footer = ({ visibilityFilter, onFilterClick }) => {
+const Footer = () => {
   return (
     <p>
       Show: <FilterLink filter="SHOW_ALL">ALL</FilterLink>{" "}
@@ -221,15 +221,7 @@ const TodoApp = ({ todos, visibilityFilter }) => {
       <h1>Practice: reducer with compisition pattern</h1>
       <AddTodo />
       <div>current maxId: {todoId}</div>
-      <Footer
-        visibilityFilter={visibilityFilter}
-        onFilterClick={filter =>
-          store.dispatch({
-            type: "SET_VISIBILITY_FILTER",
-            filter
-          })
-        }
-      />
+      <Footer />
       <VisibleTodoList />
     </div>
   );

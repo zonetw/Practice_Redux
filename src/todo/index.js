@@ -228,9 +228,5 @@ const TodoApp = ({ todos, visibilityFilter }) => {
 };
 
 const rootElement = document.getElementById("todo");
-const render = () => {
-  ReactDOM.render(<TodoApp {...store.getState()} />, rootElement);
-};
-store.subscribe(render);
-render();
+ReactDOM.render(<TodoApp {...store.getState()} />, rootElement);
 export default TodoApp;

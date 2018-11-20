@@ -215,7 +215,7 @@ class VisibleTodoList extends Component {
   }
 }
 
-const TodoApp = ({ todos, visibilityFilter }) => {
+const TodoApp = () => {
   return (
     <div>
       <h1>Practice: reducer with compisition pattern</h1>
@@ -228,5 +228,5 @@ const TodoApp = ({ todos, visibilityFilter }) => {
 };
 
 const rootElement = document.getElementById("todo");
-ReactDOM.render(<TodoApp {...store.getState()} />, rootElement);
+ReactDOM.render(<TodoApp />, rootElement);
 export default TodoApp;

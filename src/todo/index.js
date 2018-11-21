@@ -72,39 +72,61 @@ const Link = ({ active, children, onClick }) => {
   }
 };
 
-class FilterLink extends Component {
-  componentDidMount() {
-    const { store } = this.context;
-    this.unsubscribe = store.subscribe(() => this.forceUpdate());
-  }
+// class FilterLink extends Component {
+//   componentDidMount() {
+//     const { store } = this.context;
+//     this.unsubscribe = store.subscribe(() => this.forceUpdate());
+//   }
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
+//   componentWillUnmount() {
+//     this.unsubscribe();
+//   }
 
-  render() {
-    const props = this.props;
-    const { store } = this.context;
-    const state = store.getState();
+//   render() {
+//     const props = this.props;
+//     const { store } = this.context;
+//     const state = store.getState();
 
-    return (
-      <Link
-        active={props.filter === state.visibilityFilter}
-        onClick={() => {
-          store.dispatch({
-            type: "SET_VISIBILITY_FILTER",
-            filter: props.filter
-          });
-        }}
-      >
-        {props.children}
-      </Link>
-    );
-  }
-}
-FilterLink.contextTypes = {
-  store: React.PropTypes
+//     return (
+//       <Link
+//         active={props.filter === state.visibilityFilter}
+//         onClick={() => {
+//           store.dispatch({
+//             type: "SET_VISIBILITY_FILTER",
+//             filter: props.filter
+//           });
+//         }}
+//       >
+//         {props.children}
+//       </Link>
+//     );
+//   }
+// }
+// FilterLink.contextTypes = {
+//   store: React.PropTypes
+// };
+
+const mapStateToLinkProps = (state, ownProps) => {
+  return {
+    active: ownProps.filter === state.visibilityFilter
+  };
 };
+
+const mapDispatchToLinkProps = (dispatch, ownProps) => {
+  return {
+    onClick: () => {
+      dispatch({
+        type: "SET_VISIBILITY_FILTER",
+        filter: ownProps.filter
+      });
+    }
+  };
+};
+
+const FilterLink = connect(
+  mapStateToLinkProps,
+  mapDispatchToLinkProps
+)(Link);
 
 const getFilterdTodos = (todos, filter) => {
   switch (filter) {

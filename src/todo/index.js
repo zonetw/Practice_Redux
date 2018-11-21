@@ -1,6 +1,7 @@
 import React from "react";
 import { Component } from "react";
 import ReactDOM from "react-dom";
+import { connect } from "react-redux";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
 import { combineReducers } from "redux";
@@ -205,36 +206,58 @@ Footer.contextTypes = {
   store: React.PropTypes
 };
 
-class VisibleTodoList extends Component {
-  componentDidMount() {
-    const { store } = this.context;
-    this.unsubscribe = store.subscribe(() => this.forceUpdate());
-  }
+// class VisibleTodoList extends Component {
+//   componentDidMount() {
+//     const { store } = this.context;
+//     this.unsubscribe = store.subscribe(() => this.forceUpdate());
+//   }
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
+//   componentWillUnmount() {
+//     this.unsubscribe();
+//   }
 
-  render() {
-    const { store } = this.context;
-    const state = store.getState();
+//   render() {
+//     const { store } = this.context;
+//     const state = store.getState();
 
-    return (
-      <TodoList
-        todos={getFilterdTodos(state.todos, state.visibilityFilter)}
-        onTodoClick={id =>
-          store.dispatch({
-            type: "TOGGLE_TODO",
-            id
-          })
-        }
-      />
-    );
-  }
-}
-VisibleTodoList.contextTypes = {
-  store: React.PropTypes
+//     return (
+//       <TodoList
+//         todos={getFilterdTodos(state.todos, state.visibilityFilter)}
+//         onTodoClick={id =>
+//           store.dispatch({
+//             type: "TOGGLE_TODO",
+//             id
+//           })
+//         }
+//       />
+//     );
+//   }
+// }
+// VisibleTodoList.contextTypes = {
+//   store: React.PropTypes
+// };
+
+const mapStateToProps = state => {
+  return {
+    todos: getFilterdTodos(state.todos, state.visibilityFilter)
+  };
 };
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onTodoClick: id => {
+      dispatch({
+        type: "TOGGLE_TODO",
+        id
+      });
+    }
+  };
+};
+
+const VisibleTodoList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList);
 
 const TodoApp = () => {
   return (
